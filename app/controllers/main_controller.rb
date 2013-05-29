@@ -17,6 +17,9 @@ class MainController < ApplicationController
     doc = Nokogiri::HTML(page_html)
     @output = ''
     doc.css("p[@class='row']").each do |row|
+
+# TODO: add something here so if getting unexpected results (like not text), output warning that
+# maybe cl has changed its markup
       date = row.css("span[@class='date']").text
       text = ''
       path = ''
