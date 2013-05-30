@@ -5,4 +5,10 @@
 <% end %>
 -->
 
-<%= @output.html_safe %>
+<% @output.sort_by {|hsh| hsh[:date]}.each do |row| %>
+  <p>
+    <%= row[:date] %> --
+    <%= row[:area] %> --
+    <a href='<%= row[:link] %>' target='blank'><%= row[:text] %></a>
+  </p>
+<% end %>
