@@ -12,7 +12,7 @@ class MainController < ApplicationController
     require 'net/http'
     @output = []
     processed_count = 0
-    urls = cl_locale_root_urls
+    urls = cl_locale_root_urls_testing
     urls.each do |root_url|
       uri = URI("#{root_url}/search/sof?zoomToPosting=&query=ruby&srchType=A&addTwo=contract")
       page_html = Net::HTTP.get(uri)
@@ -22,7 +22,8 @@ class MainController < ApplicationController
         data[:date] = Date.parse(row.css("span[@class='date']").text)
         data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
         row.css('a').each do |link|
-          data[:link] = "#{root_url}#{link.attributes['href'].value}" if !link.text.empty?
+          data[:link] = "#{link.attributes['href'].value}" if !link.text.empty?
+          data[:link] = root_url + data[:link].to_s if !data[:link].to_s.index(/\.craigslist\.org/)
           data[:text] = link.text
         end
         @output << data
@@ -95,7 +96,7 @@ class MainController < ApplicationController
       'http://santamaria.craigslist.org',
       'http://siskiyou.craigslist.org',
       'http://stockton.craigslist.org',
-      'http://susanville.c@output.sort_by{|hsh| hsh[:date]}.reverse.each {|hsh| puts hsh[:date]}raigslist.org',
+      'http://susanville.craigslist.org',
       'http://ventura.craigslist.org',
       'http://visalia.craigslist.org',
       'http://yubasutter.craigslist.org',
