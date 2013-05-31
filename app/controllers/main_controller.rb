@@ -4,30 +4,32 @@ class MainController < ApplicationController
     # http://auburn.craigslist.org/search/sof?zoomToPosting=&query=ruby&srchType=A&addTwo=contract&addOne=telecommute&addFour=part-time
 
     # TODO:
-    # why only get sfbay?
-    # convert date to date object
-    # sort by date desc (verify)
     # try on full url pull
     # send to dan
     # allow user to change the query (set up a form)
+    # get gigs also
 
     require 'net/http'
-    cl_locale_root_urls_testing.each do |root_url|
-puts root_url
+    @output = []
+    processed_count = 0
+    urls = cl_locale_root_urls
+    urls.each do |root_url|
       uri = URI("#{root_url}/search/sof?zoomToPosting=&query=ruby&srchType=A&addTwo=contract")
       page_html = Net::HTTP.get(uri)
       doc = Nokogiri::HTML(page_html)
-      @output = []
       doc.css("p[@class='row']").each do |row|
         data = {}
-        data[:date] = row.css("span[@class='date']").text
+        data[:date] = Date.parse(row.css("span[@class='date']").text)
         data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
         row.css('a').each do |link|
           data[:link] = "#{root_url}#{link.attributes['href'].value}" if !link.text.empty?
           data[:text] = link.text
         end
         @output << data
+# TODO: add something here so if getting unexpected results (like not text), output warning that
+# maybe cl has changed its markup
       end
+      puts "processed: #{processed_count += 1} of #{urls.length}, #{root_url}"
     end
   end
 
@@ -93,7 +95,7 @@ puts root_url
       'http://santamaria.craigslist.org',
       'http://siskiyou.craigslist.org',
       'http://stockton.craigslist.org',
-      'http://susanville.craigslist.org',
+      'http://susanville.c@output.sort_by{|hsh| hsh[:date]}.reverse.each {|hsh| puts hsh[:date]}raigslist.org',
       'http://ventura.craigslist.org',
       'http://visalia.craigslist.org',
       'http://yubasutter.craigslist.org',
