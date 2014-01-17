@@ -8,6 +8,7 @@
 
 <pre>
   <% @output.sort_by{|hsh| hsh[:date]}.reverse.each do |row| %>
-      <%= row[:date].strftime('%D').ljust(15) %><%= row[:area].ljust(25) %><a href='<%= row[:link] %>' target='blank'><%= row[:text] %></a>
+      <%= row[:date].ljust(15) %><%= row[:area].ljust(25) %><a href='<%= row[:link] %>' target='blank'><%= row[:text] %></a>
+      <%= row %>
   <% end %>
 </pre>

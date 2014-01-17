@@ -1,8 +1,6 @@
 class MainController < ApplicationController
-
   def index
     # http://auburn.craigslist.org/search/sof?zoomToPosting=&query=ruby&srchType=A&addTwo=contract&addOne=telecommute&addFour=part-time
-
     # TODO:
     # try on full url pull
     # send to dan
@@ -12,30 +10,38 @@ class MainController < ApplicationController
     require 'net/http'
     @output = []
     processed_count = 0
-    urls = cl_locale_root_urls_testing
+    #urls = cl_locale_root_urls
+    urls = cl_locale_root_urls
     urls.each do |root_url|
-      uri = URI("#{root_url}/search/sof?zoomToPosting=&query=ruby&srchType=A&addTwo=contract")
-      page_html = Net::HTTP.get(uri)
-      doc = Nokogiri::HTML(page_html)
-      doc.css("p[@class='row']").each do |row|
-        data = {}
-        data[:date] = Date.parse(row.css("span[@class='date']").text)
-        data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
-        row.css('a').each do |link|
-          data[:link] = "#{link.attributes['href'].value}" if !link.text.empty?
-          data[:link] = root_url + data[:link].to_s if !data[:link].to_s.index(/\.craigslist\.org/)
-          data[:text] = link.text
+
+      # jobs
+      jobs_uri = URI("#{root_url}/search/jjj?zoomToPosting=&catAbb=jjj&query=ruby&addOne=telecommuting&excats=")
+      # gigs
+      gigs_uri = URI("#{root_url}/search/ggg?zoomToPosting=&catAbb=ggg&query=ruby&addThree=&excats=")
+
+      [jobs_uri, gigs_uri].each do |uri|
+        page_html = Net::HTTP.get(uri)
+        doc = Nokogiri::HTML(page_html)
+        doc.css("p[@class='row']").each do |row|
+          data = {}
+          data[:date] = Date.parse(row.css("span[@class='date']").text).strftime
+          data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
+          row.css('a').each do |link|
+            if link.attributes['href'].value.match(/\.html$/)
+              data[:link] = "#{link.attributes['href'].value}"
+              data[:link] = root_url + data[:link].to_s if !data[:link].to_s.index(/\.craigslist\.org/)
+            end
+            if !link.text.empty?
+              data[:text] = link.text
+            end
+          end
+          @output << data
         end
-        @output << data
-# TODO: add something here so if getting unexpected results (like not text), output warning that
-# maybe cl has changed its markup
       end
       puts "processed: #{processed_count += 1} of #{urls.length}, #{root_url}"
     end
   end
-
   private
-
   def cl_locale_root_urls_testing
     [
       'http://losangeles.craigslist.org',
@@ -43,7 +49,6 @@ class MainController < ApplicationController
       'http://sfbay.craigslist.org'
     ]
   end
-
   def cl_locale_root_urls
     [
       'http://auburn.craigslist.org',
@@ -418,7 +423,7 @@ class MainController < ApplicationController
       'http://ogden.craigslist.org',
       'http://provo.craigslist.org',
       'http://saltlakecity.craigslist.org',
-      'http://stgeorge.craigslist.org',
+      'http://stg.org',
       'http://burlington.craigslist.org',
       'http://charlottesville.craigslist.org',
       'http://danville.craigslist.org',
@@ -444,7 +449,6 @@ class MainController < ApplicationController
       'http://charlestonwv.craigslist.org',
       'http://martinsburg.craigslist.org',
       'http://huntington.craigslist.org',
-      'http://morgantown.craigslist.org',
       'http://wheeling.craigslist.org',
       'http://parkersburg.craigslist.org',
       'http://swv.craigslist.org',
@@ -466,5 +470,4 @@ class MainController < ApplicationController
       'http://virgin.craigslist.org'
     ]
   end
-
 end
