@@ -15,16 +15,19 @@ class MainController < ApplicationController
     urls.each do |root_url|
 
       # jobs
-      jobs_uri = URI("#{root_url}/search/jjj?zoomToPosting=&catAbb=jjj&query=ruby&addOne=telecommuting&excats=")
+      jobs_uri = URI("#{root_url}/search/jjj?query=ruby&is_telecommuting=1")
       # gigs
-      gigs_uri = URI("#{root_url}/search/ggg?zoomToPosting=&catAbb=ggg&query=ruby&addThree=&excats=")
+      gigs_uri = URI("#{root_url}/search/ggg?excats=%22%29&query=ruby")
 
       [jobs_uri, gigs_uri].each do |uri|
         page_html = Net::HTTP.get(uri)
         doc = Nokogiri::HTML(page_html)
         doc.css("p[@class='row']").each do |row|
+          date = Date.parse(row.css("span[@class='date']").text)
+          next if date < Date.today - 7.days || date > Date.today + 7.days
+
           data = {}
-          data[:date] = Date.parse(row.css("span[@class='date']").text).strftime
+          data[:date] = date.strftime
           data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
           row.css('a').each do |link|
             if link.attributes['href'].value.match(/\.html$/)
