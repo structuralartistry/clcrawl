@@ -10,20 +10,21 @@ class MainController < ApplicationController
     require 'net/http'
     @output = []
     processed_count = 0
+    urls = cl_locale_root_urls_testing
     #urls = cl_locale_root_urls
-    urls = cl_locale_root_urls
     urls.each do |root_url|
 
       # jobs
       jobs_uri = URI("#{root_url}/search/jjj?query=ruby&is_telecommuting=1")
       # gigs
-      gigs_uri = URI("#{root_url}/search/ggg?excats=%22%29&query=ruby")
+      gigs_uri = URI("#{root_url}/search/ggg?query=ruby")
 
       [jobs_uri, gigs_uri].each do |uri|
         page_html = Net::HTTP.get(uri)
         doc = Nokogiri::HTML(page_html)
         doc.css("p[@class='row']").each do |row|
-          date = Date.parse(row.css("span[@class='date']").text)
+          date = Date.parse(row.css('time').first.first[1])
+          #date = Date.parse(row.css("span[@class='date']").text)
           next if date < Date.today - 7.days || date > Date.today + 7.days
 
           data = {}
@@ -44,7 +45,9 @@ class MainController < ApplicationController
       puts "processed: #{processed_count += 1} of #{urls.length}, #{root_url}"
     end
   end
+
   private
+
   def cl_locale_root_urls_testing
     [
       'http://losangeles.craigslist.org',
@@ -52,6 +55,7 @@ class MainController < ApplicationController
       'http://sfbay.craigslist.org'
     ]
   end
+
   def cl_locale_root_urls
     [
       'http://auburn.craigslist.org',
@@ -122,6 +126,7 @@ class MainController < ApplicationController
       'http://nwct.craigslist.org',
       'http://delaware.craigslist.org',
       'http://washingtondc.craigslist.org',
+      'http://miami.craigslist.org/brw',
       'http://daytona.craigslist.org',
       'http://keys.craigslist.org',
       'http://fortlauderdale.craigslist.org',
@@ -130,6 +135,7 @@ class MainController < ApplicationController
       'http://cfl.craigslist.org',
       'http://jacksonville.craigslist.org',
       'http://lakeland.craigslist.org',
+      'http://miami.craigslist.org/mdc',
       'http://lakecity.craigslist.org',
       'http://ocala.craigslist.org',
       'http://okaloosa.craigslist.org',
@@ -143,7 +149,7 @@ class MainController < ApplicationController
       'http://tallahassee.craigslist.org',
       'http://tampa.craigslist.org',
       'http://treasure.craigslist.org',
-      'http://westpalmbeach.craigslist.org',
+      'http://miami.craigslist.org/pbc',
       'http://albanyga.craigslist.org',
       'http://athensga.craigslist.org',
       'http://atlanta.craigslist.org',
@@ -426,7 +432,7 @@ class MainController < ApplicationController
       'http://ogden.craigslist.org',
       'http://provo.craigslist.org',
       'http://saltlakecity.craigslist.org',
-      'http://stg.org',
+      'http://stgeorge.craigslist.org',
       'http://burlington.craigslist.org',
       'http://charlottesville.craigslist.org',
       'http://danville.craigslist.org',
@@ -452,6 +458,7 @@ class MainController < ApplicationController
       'http://charlestonwv.craigslist.org',
       'http://martinsburg.craigslist.org',
       'http://huntington.craigslist.org',
+      'http://morgantown.craigslist.org',
       'http://wheeling.craigslist.org',
       'http://parkersburg.craigslist.org',
       'http://swv.craigslist.org',

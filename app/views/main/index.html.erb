@@ -1,11 +1,3 @@
-<!--
-<%= form_tag "/main/command" do %>
-  <%= text_field_tag "command", "/search/sof?zoomToPosting=&query=ruby&srchType=A&addTwo=contract&addOne=telecommute&addFour=part-time" %>
-  <%= submit_tag "Submit" %>
-<% end %>
-
--->
-
 <pre>
   <% @output.sort_by{|hsh| hsh[:date]}.reverse.each do |row| %>
       <%= row[:date].ljust(15) %><%= row[:area].ljust(25) %><a href='<%= row[:link] %>' target='blank'><%= row[:text] %></a>
