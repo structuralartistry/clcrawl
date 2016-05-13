@@ -10,8 +10,8 @@ class MainController < ApplicationController
     require 'net/http'
     @output = []
     processed_count = 0
-    urls = cl_locale_root_urls_testing
-    #urls = cl_locale_root_urls
+    #urls = cl_locale_root_urls_testing
+    urls = cl_locale_root_urls
     urls.each do |root_url|
 
       # jobs
