@@ -13,33 +13,44 @@ class MainController < ApplicationController
     #urls = cl_locale_root_urls_testing
     urls = cl_locale_root_urls
     urls.each do |root_url|
+      # to not get banned by cl
+      sleep 4
 
       # jobs
-      jobs_uri = URI("#{root_url}/search/jjj?query=ruby&is_telecommuting=1")
+      jobs_uri = URI("#{root_url}/search/sof?query=ruby+%7C+devops&is_telecommuting=1k")
+      #jobs_uri2 = URI("#{root_url}/search/sof?query=devops")
+      #jobs_uri3 = URI("#{root_url}/search/sad?query=ruby")
+      #jobs_uri4 = URI("#{root_url}/search/sad?query=devops")
+
       # gigs
-      gigs_uri = URI("#{root_url}/search/ggg?query=ruby")
+      gigs_uri = URI("#{root_url}/search/cpg?query=ruby+%7C+devops&is_paid=all")
+      #gigs_uri2 = URI("#{root_url}/search/cpg?query=devops&is_paid=yes")
 
       [jobs_uri, gigs_uri].each do |uri|
-        page_html = Net::HTTP.get(uri)
-        doc = Nokogiri::HTML(page_html)
-        doc.css("p[@class='row']").each do |row|
-          date = Date.parse(row.css('time').first.first[1])
-          #date = Date.parse(row.css("span[@class='date']").text)
-          next if date < Date.today - 7.days || date > Date.today + 7.days
+        begin
+          page_html = Net::HTTP.get(uri)
+          doc = Nokogiri::HTML(page_html)
+          doc.css("p[@class='row']").each do |row|
+            date = Date.parse(row.css('time').first.first[1])
+            #date = Date.parse(row.css("span[@class='date']").text)
+            next if date < Date.today - 7.days || date > Date.today + 7.days
 
-          data = {}
-          data[:date] = date.strftime
-          data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
-          row.css('a').each do |link|
-            if link.attributes['href'].value.match(/\.html$/)
-              data[:link] = "#{link.attributes['href'].value}"
-              data[:link] = root_url + data[:link].to_s if !data[:link].to_s.index(/\.craigslist\.org/)
+            data = {}
+            data[:date] = date.strftime
+            data[:area] = root_url.gsub('http://','').gsub('.craigslist.org','')
+            row.css('a').each do |link|
+              if link.attributes['href'].value.match(/\.html$/)
+                data[:link] = "#{link.attributes['href'].value}"
+                data[:link] = root_url + data[:link].to_s if !data[:link].to_s.index(/\.craigslist\.org/)
+              end
+              if !link.text.empty?
+                data[:text] = link.text
+              end
             end
-            if !link.text.empty?
-              data[:text] = link.text
-            end
+            @output << data
           end
-          @output << data
+        rescue
+          puts "Failed to process #{uri}"
         end
       end
       puts "processed: #{processed_count += 1} of #{urls.length}, #{root_url}"
