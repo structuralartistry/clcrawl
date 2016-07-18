@@ -17,7 +17,7 @@ class MainController < ApplicationController
       sleep 4
 
       # jobs
-      jobs_uri = URI("#{root_url}/search/sof?query=ruby+%7C+devops&is_telecommuting=1k")
+      jobs_uri = URI("#{root_url}/search/sof?query=ruby+%7C+devops&is_telecommuting=1")
       #jobs_uri2 = URI("#{root_url}/search/sof?query=devops")
       #jobs_uri3 = URI("#{root_url}/search/sad?query=ruby")
       #jobs_uri4 = URI("#{root_url}/search/sad?query=devops")
