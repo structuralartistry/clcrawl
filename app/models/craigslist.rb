@@ -47,7 +47,7 @@ class Craigslist
             end
 
             #<%= row[:date].ljust(15) %><%= row[:area].ljust(25) %><a href='<%= row[:link] %>' target='blank'><%= row[:text] %></a>
-            formatted_data = "#{data[:date].to_s.ljust(15)}#{data[:area].to_s.ljust(25)}<a href='<%= #{data[:link]} %>' target='blank'>#{data[:text]}</a>"
+            formatted_data = "#{data[:date].to_s.ljust(15)}#{data[:area].to_s.ljust(25)}<a href='#{data[:link]}' target='blank'>#{data[:text]}</a>"
             puts formatted_data
             write_to_file(formatted_data)
           end
