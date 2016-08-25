@@ -3,6 +3,8 @@ class Craigslist
   FILE_PATH = 'tmp/output.html'
 
   def get_results
+    days_window = 7
+
     file_full_path = File.expand_path(FILE_PATH)
     if File.exists?(file_full_path)
       File.delete(file_full_path)
@@ -29,7 +31,7 @@ class Craigslist
           doc = Nokogiri::HTML(page_html)
           doc.css("p[@class='row']").each do |row|
             date = Date.parse(row.css('time').first.first[1])
-            next if date < Date.today - 7.days || date > Date.today + 7.days
+            next if date < Date.today - days_window.days || date > Date.today + days_window.days
 
             data = {}
             data[:date] = date.strftime
@@ -495,7 +497,7 @@ class Craigslist
 
   def write_to_file(data)
     file_path = File.expand_path(FILE_PATH)
-    File.open(file_path, 'a') {|f| f.write(data) }
+    File.open(file_path, 'a') {|f| f.puts(data) }
   end
 
 
