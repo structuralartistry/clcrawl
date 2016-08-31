@@ -1,9 +1,10 @@
 class Craigslist
 
-  FILE_PATH = 'tmp/output.html'
+  FILE_PATH = "tmp/output_#{DateTime.now.to_s.gsub(/:/,'')}.html"
 
   def get_results
-    days_window = 7
+    days_window = 2
+    pause_interval = 30
 
     file_full_path = File.expand_path(FILE_PATH)
     if File.exists?(file_full_path)
@@ -17,7 +18,7 @@ class Craigslist
     urls = cl_locale_root_urls
     urls.each do |root_url|
       # to not get banned by cl
-      sleep 7
+      sleep pause_interval
 
       # jobs
       jobs_uri = URI("#{root_url}/search/sof?query=ruby+%7C+devops&employment_type=2&employment_type=3&employment_type=4")
