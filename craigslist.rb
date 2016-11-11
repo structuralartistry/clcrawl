@@ -1,3 +1,5 @@
+require 'date'
+
 class Craigslist
 
   FILE_PATH = "tmp/output_#{DateTime.now.to_s.gsub(/:/,'')}.html"
@@ -42,9 +44,7 @@ class Craigslist
             row.css('a').each do |link|
               if link.attributes['href'].value.match(/\.html$/)
                 data[:link] = "#{link.attributes['href'].value}"
-                puts "pre data:link #{data[:link]}"
                 data[:link] = root_url + data[:link].to_s if !data[:link].to_s.index(/\.craigslist\.org/)
-                puts "post data:link #{data[:link]}"
               end
               if !link.text.empty?
                 data[:text] = link.text
@@ -56,8 +56,8 @@ class Craigslist
             puts formatted_data
             write_to_file(formatted_data)
           end
-        rescue Exception => ex
-          puts "Failed to process #{uri}, error: #{ex.message}"
+        rescue
+          puts "Failed to process #{uri}"
         end
       end
       puts "processed: #{processed_count += 1} of #{urls.length}, #{root_url}"
